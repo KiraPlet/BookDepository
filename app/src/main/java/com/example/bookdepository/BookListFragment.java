@@ -1,5 +1,6 @@
 package com.example.bookdepository;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,8 +19,10 @@ public class BookListFragment extends Fragment {
     private RecyclerView mBookRecyclerView;
     private BookAdapter mAdapter;
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_book_list, container, false);
+    public View onCreateView(LayoutInflater inflater,
+                             ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_book_list,
+                container, false);
         mBookRecyclerView = (RecyclerView) view
                 .findViewById(R.id.book_recycler_view);
         mBookRecyclerView.setLayoutManager(new LinearLayoutManager
@@ -27,12 +30,22 @@ public class BookListFragment extends Fragment {
         updateUI();
         return view;
     }
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateUI();
+    }
 
     private void updateUI() {
         BookLab bookLab = BookLab.get(getActivity());
         List<Book> books = bookLab.getBooks();
-        mAdapter = new BookAdapter(books);
-        mBookRecyclerView.setAdapter(mAdapter);
+        if (mAdapter == null){
+            mAdapter = new BookAdapter(books);
+            mBookRecyclerView.setAdapter(mAdapter);
+        } else {
+            mAdapter.notifyDataSetChanged();
+        }
+
     }
 
     private class BookHolder extends RecyclerView.ViewHolder
@@ -44,9 +57,12 @@ public class BookListFragment extends Fragment {
         public BookHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
-            mTitleTextView = (TextView) itemView.findViewById(R.id.list_item_book_title_text_view);
-            mDateTextView = (TextView) itemView.findViewById(R.id.list_item_book_date_text_view);
-            mReadedCheckBox = (CheckBox) itemView.findViewById(R.id.list_item_book_readed_check_box);
+            mTitleTextView = (TextView)
+                    itemView.findViewById(R.id.list_item_book_title_text_view);
+            mDateTextView = (TextView)
+                    itemView.findViewById(R.id.list_item_book_date_text_view);
+            mReadedCheckBox = (CheckBox)
+                    itemView.findViewById(R.id.list_item_book_readed_check_box);
         }
         public void bindBook(Book book) {
             mBook = book;
@@ -56,8 +72,8 @@ public class BookListFragment extends Fragment {
         }
         @Override
         public void onClick(View v) {
-            Toast.makeText(getActivity(),
-                    mBook.getTitle() + " clicked!", Toast.LENGTH_SHORT) .show();
+            Intent intent = BookActivity.newIntent(getActivity(), mBook.getId());
+            startActivity(intent);
         }
     }
     private class BookAdapter extends RecyclerView.Adapter<BookHolder> {
@@ -84,3 +100,9 @@ public class BookListFragment extends Fragment {
         }
     }
 }
+
+
+
+
+
+
