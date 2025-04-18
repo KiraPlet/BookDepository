@@ -19,7 +19,7 @@ public class BookLab {
         for (int i = 0; i < 100; i++) {
             Book book = new Book();
             book.setTitle("Book #" + i);
-            book.setReaded(i % 2 == 0); // Для каждого второго объекта
+            book.setReaded(i % 2 == 0);
             mBooks.add(book);
             }
     }

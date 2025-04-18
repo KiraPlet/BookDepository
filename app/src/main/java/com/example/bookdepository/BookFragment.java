@@ -44,7 +44,6 @@ public class BookFragment extends Fragment {
         mTitleField.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged( CharSequence s, int start, int count, int after) {
-            // Здесь намеренно оставлено пустое место
             }
             @Override
             public void onTextChanged(
