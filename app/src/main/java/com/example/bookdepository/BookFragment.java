@@ -2,7 +2,12 @@ package com.example.bookdepository;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -13,10 +18,14 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import java.io.File;
 import java.text.DateFormat;
 import java.time.Instant;
 import java.util.Date;
@@ -26,11 +35,15 @@ public class BookFragment extends Fragment {
     private static final String ARG_BOOK_ID="book_id";
     private static final String DIALOG_DATE = "DialogDate";
     private static final int REQUEST_DATE = 0;
+    private static final int REQUEST_PHOTO = 1;
     private Book mBook;
     private EditText mTitleField;
     private Button mDateButton;
     private CheckBox mReadedCheckBox;
     private Button mReportButton;
+    private File mPhotoFile;
+    private ImageButton mPhotoButton;
+    private ImageView mPhotoView;
 
     public static BookFragment newInstance(UUID bookId) {
         Bundle args = new Bundle();
@@ -45,6 +58,7 @@ public class BookFragment extends Fragment {
         super.onCreate(savedInstanceState);
         UUID bookId = (UUID) getArguments().getSerializable(ARG_BOOK_ID);
         mBook = BookLab.get(getActivity()).getBook(bookId);
+        mPhotoFile = BookLab.get(getActivity()).getPhotoFile(mBook);
     }
     @Override
     public void onPause() {
@@ -89,7 +103,6 @@ public class BookFragment extends Fragment {
                 mBook.setReaded(isChecked);
             }
         });
-
         mReportButton = (Button)v.findViewById(R.id.book_report);
         mReportButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -102,8 +115,33 @@ public class BookFragment extends Fragment {
 
                 startActivity(i);
             }
+
         });
-        return v;
+
+        mPhotoButton = (ImageButton) v.findViewById(R.id.book_camera);
+        final Intent captureImage =
+                new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        PackageManager packageManager = getActivity().getPackageManager();
+        boolean canTakePhoto = mPhotoFile != null &&
+                captureImage.resolveActivity(packageManager) != null;
+        if (canTakePhoto) {
+            Uri uri;
+            if (Build.VERSION.SDK_INT<24)
+                uri = Uri.fromFile(mPhotoFile);
+            else
+                uri = FileProvider.getUriForFile(getActivity(),
+                        getActivity().getPackageName() + ".provider", mPhotoFile);
+            captureImage.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+            mPhotoButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivityForResult(captureImage, REQUEST_PHOTO);
+                }
+            });
+            mPhotoView = (ImageView) v.findViewById(R.id.book_photo);
+            updatePhotoView();
+        }
+            return v;
     }
 
     private void updateDate() {
@@ -124,6 +162,15 @@ public class BookFragment extends Fragment {
                 mBook.getTitle(), dateString, readedString);
         return report;
     }
+    private void updatePhotoView() {
+        if (mPhotoFile == null || !mPhotoFile.exists()) {
+            mPhotoView.setImageDrawable(null);
+        } else {
+            Bitmap bitmap = PictureUtils.getScaledBitmap(
+                    mPhotoFile.getPath(), getActivity());
+            mPhotoView.setImageBitmap(bitmap);
+        }
+    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -135,6 +182,8 @@ public class BookFragment extends Fragment {
                     .getSerializableExtra(DatePickerFragment.EXTRA_DATE );
             mBook.setDate(date);
             updateDate();
+        } else if (requestCode == REQUEST_PHOTO) {
+            updatePhotoView();
         }
     }
 }
