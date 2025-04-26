@@ -98,6 +98,7 @@ public class BookListFragment extends Fragment {
             mAdapter = new BookAdapter(books);
             mBookRecyclerView.setAdapter(mAdapter);
         } else {
+            mAdapter.setBooks(books);
             mAdapter.notifyDataSetChanged();
         }
         updateSubtitle();
@@ -154,11 +155,9 @@ public class BookListFragment extends Fragment {
         public int getItemCount() {
             return mBooks.size();
         }
+        public void setBooks(List<Book> books) {
+            mBooks = books;
+        }
     }
 }
-
-
-
-
-
 

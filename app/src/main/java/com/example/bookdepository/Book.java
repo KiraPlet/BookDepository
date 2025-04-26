@@ -11,7 +11,10 @@ public class Book {
 
 
     public Book() {
-        mId = UUID.randomUUID(); //Генерирование уникального идентификатора
+        this(UUID.randomUUID());
+    }
+    public Book(UUID id) {
+        mId = id;
         mDate = new Date();
     }
     public UUID getId() {
