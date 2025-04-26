@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
-    tools:context=".BookActivity">
+    >
 
     <TextView
         android:layout_width="match_parent"
@@ -20,7 +19,6 @@
         android:id="@+id/book_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:hint="@string/book_title_hint"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
@@ -32,24 +30,36 @@
         android:text="@string/book_details_label"
         style="?android:listSeparatorTextViewStyle"/>
 
+
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="horizontal">
-
         <Button
             android:id="@+id/book_date"
+            android:layout_marginLeft="16dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:padding="80dp" />
-
+            android:backgroundTint="#C5C5C5"
+            android:padding="80dp"
+            app:cornerRadius="10dp" />
         <CheckBox
             android:id="@+id/book_readed"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="@string/book_readed_label" />
     </LinearLayout>
+    <Button
+        android:id="@+id/book_report"
+        android:backgroundTint="#C5C5C5"
+        app:cornerRadius="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:hint="@string/book_report_text"/>
 
 </LinearLayout>
